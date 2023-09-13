@@ -1,5 +1,6 @@
 import { Sequelize } from 'sequelize';
 import configs from './global.config';
+import logger from '../utils/logger.util';
 
 const sequelize = new Sequelize({
   dialect: 'mysql',
@@ -8,7 +9,7 @@ const sequelize = new Sequelize({
   username: configs.database.username,
   password: configs.database.password,
   database: configs.database.database,
-  logging: console.log,
+  logging: (message) => logger.info(message),
 });
 
 export default sequelize;
