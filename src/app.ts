@@ -3,6 +3,7 @@ import express from 'express';
 import sequelize from './configs/database.config';
 import configs from './configs/global.config';
 import logger from './utils/logger.util';
+import databaseInit from './database/init.database';
 
 const bootstrap = async () => {
   const app = express();
@@ -16,6 +17,7 @@ const bootstrap = async () => {
     try {
       await sequelize.authenticate();
       logger.info('DB Connected');
+      await databaseInit();
     } catch (error: any) {
       logger.error(error.message);
     }
