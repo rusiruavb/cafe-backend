@@ -4,9 +4,17 @@ import EmployeeService from './employee.service';
 
 class EmployeeController {
   static async createEmployee(req: Request, res: Response): Promise<Response> {
+    if (!req.body) {
+      return res.status(400).json({ message: 'Bad request' });
+    }
+
     const {
       firstName, lastName, email, phoneNumber, gender, startDate, cafeId,
     } = req.body;
+
+    if (!firstName && !lastName && !email && !phoneNumber && !gender && !startDate && !cafeId) {
+      return res.status(400).json({ message: 'Bad request' });
+    }
 
     try {
       const employeeDto = new EmployeeDTO(
@@ -15,7 +23,7 @@ class EmployeeController {
         email,
         phoneNumber,
         gender,
-        startDate,
+        new Date(startDate),
         cafeId,
       );
 

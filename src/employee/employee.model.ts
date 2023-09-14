@@ -59,7 +59,7 @@ Employee.init({
   phoneNumber: {
     type: DataTypes.STRING,
     allowNull: false,
-    validate: { is: /^[89]\d{7}$/i },
+    // validate: { is: /^[89]\d{7}$/i },
   },
   gender: {
     type: DataTypes.ENUM,
