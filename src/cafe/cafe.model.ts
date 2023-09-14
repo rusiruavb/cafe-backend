@@ -9,7 +9,7 @@ class Cafe extends Model<CafeAttributes, CafeModeAttributes> implements CafeAttr
 
   public name!: string;
 
-  public logo!: string;
+  public logo!: string | null;
 
   public location!: string;
 
