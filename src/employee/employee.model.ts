@@ -24,6 +24,8 @@ class Employee extends Model<EmployeeAttributes, EmployeeModelAttributes>
 
   public cafeId!: number;
 
+  public workDayCount?: number;
+
   public readonly createdAt?: Date | undefined;
 
   public readonly updatedAt?: Date | undefined;

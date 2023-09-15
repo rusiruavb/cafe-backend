@@ -1,9 +1,12 @@
+import { Op } from 'sequelize';
 import Employee from './employee.model';
 import sequelize from '../configs/database.config';
 import EmployeeDTO from './employee.dto';
+import Cafe from '../cafe/cafe.model';
+import { EmployeeAttributes } from './employee.types';
 
 class EmployeeService {
-  static async addEmployee(employeeDto: EmployeeDTO): Promise<Employee> {
+  static async addEmployee(employeeDto: EmployeeDTO): Promise<EmployeeAttributes> {
     const trns = await sequelize.transaction();
 
     try {
@@ -15,6 +18,12 @@ class EmployeeService {
 
       if (existingEmployee) {
         throw new Error('Employee already assigned to a cafe');
+      }
+
+      const cafe = await Cafe.findByPk(employeeDto.cafeId, { attributes: ['employeeCount'] });
+
+      if (!cafe) {
+        throw new Error('Cafe not found');
       }
 
       const employeeInput = {
@@ -30,11 +39,116 @@ class EmployeeService {
 
       const employee = await Employee.create(employeeInput, { transaction: trns });
 
-      // TODO: update employee count in cafe
+      await Cafe.update(
+        { employeeCount: cafe.employeeCount + 1 },
+        {
+          where: { id: employeeDto.cafeId },
+          transaction: trns,
+        },
+      );
 
       await trns.commit();
 
-      return employee;
+      return employee.dataValues;
+    } catch (error: any) {
+      await trns.rollback();
+
+      if (error.message) throw error;
+
+      throw new Error('Employee account create failed');
+    }
+  }
+
+  static async findEmployees(cafeName: string): Promise<Employee[]> {
+    try {
+      let employess: Employee[];
+
+      if (cafeName) {
+        employess = await Employee.findAll({
+          include: {
+            model: Cafe,
+            as: 'cafe',
+            where: { name: { [Op.substring]: cafeName } },
+          },
+        });
+      } else {
+        employess = await Employee.findAll();
+      }
+
+      if (!(employess.length > 0)) throw new Error('Employees not found');
+
+      const currentDate = new Date();
+
+      employess.forEach((employee) => {
+        const timeDiff = Math.abs(employee.dataValues.startDate.getTime() - currentDate.getTime());
+        const count = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+        employee.dataValues.workDayCount = count;
+      });
+
+      employess.sort((a, b) => {
+        if (a.dataValues.workDayCount && b.dataValues.workDayCount) {
+          return a.dataValues.workDayCount - b.dataValues.workDayCount;
+        }
+        return a.dataValues.startDate.getDate() - b.dataValues.startDate.getDate();
+      });
+
+      return employess;
+    } catch (error: any) {
+      if (error.message) throw error;
+
+      throw new Error('Employee account create failed');
+    }
+  }
+
+  static async updateEmployee(empId: number, employeeDto: EmployeeDTO):
+  Promise<EmployeeAttributes> {
+    const trns = await sequelize.transaction();
+
+    try {
+      const existingEmployee = await Employee.findByPk(empId);
+
+      if (!existingEmployee) {
+        throw new Error('Employee not found');
+      }
+
+      const employeeInput = {
+        firstName: employeeDto.firstName,
+        lastName: employeeDto.lastName,
+        email: employeeDto.email,
+        phoneNumber: employeeDto.phoneNumber,
+        gender: employeeDto.gender,
+        CafeId: employeeDto.cafeId,
+      };
+
+      await Employee.update(employeeInput, { where: { id: empId }, transaction: trns });
+
+      const updatedEmployee = await Employee.findByPk(empId, { transaction: trns });
+
+      if (!updatedEmployee) throw new Error('Update employee not found');
+
+      return updatedEmployee.dataValues;
+    } catch (error: any) {
+      await trns.rollback();
+
+      if (error.message) throw error;
+
+      throw new Error('Employee account create failed');
+    }
+  }
+
+  static async removeEmployee(empId: number): Promise<any> {
+    const trns = await sequelize.transaction();
+
+    try {
+      const existingEmployee = await Employee.findByPk(empId);
+
+      if (!existingEmployee) {
+        throw new Error('Employee not found');
+      }
+
+      await Employee.destroy({ where: { id: empId }, transaction: trns });
+
+      return { cafe: existingEmployee.dataValues.id, status: 'deleted', dateTime: new Date() };
     } catch (error: any) {
       await trns.rollback();
 

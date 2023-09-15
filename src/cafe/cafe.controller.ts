@@ -33,10 +33,6 @@ class CafeController {
   }
 
   static async findCafes(req: Request, res: Response): Promise<Response> {
-    if (!req.query.location) {
-      return res.status(400).json({ message: 'Bad request' });
-    }
-
     try {
       const location = req.query.location as string;
 
@@ -49,15 +45,11 @@ class CafeController {
   }
 
   static async updateCafe(req: Request, res: Response): Promise<Response> {
-    if (!req.params.cafeId) {
-      return res.status(400).json({ message: 'Bad request' });
-    }
-
     const {
-      name, description, location,
+      name, description, location, cafeId,
     } = req.body;
 
-    if (!name && !description && !location) {
+    if (!name && !description && !location && !cafeId) {
       return res.status(400).json({ message: 'Bad request' });
     }
 
@@ -67,11 +59,9 @@ class CafeController {
         file = req.file;
       }
 
-      const cafeId = parseInt(req.params.cafeId);
-
       const cafeDto = new CafeDTO(name, description, file, location);
 
-      const cafe = await CafeService.updateCafe(cafeId, cafeDto);
+      const cafe = await CafeService.updateCafe(parseInt(cafeId), cafeDto);
 
       return res.status(200).json({ cafe });
     } catch (error: any) {
@@ -80,12 +70,12 @@ class CafeController {
   }
 
   static async removeCafe(req: Request, res: Response): Promise<Response> {
-    if (!req.params.cafeId) {
+    if (!req.body.cafeId) {
       return res.status(400).json({ message: 'Bad request' });
     }
 
     try {
-      const cafeId = parseInt(req.params.cafeId);
+      const cafeId = parseInt(req.body.cafeId);
 
       const deletedData = await CafeService.removeCafe(cafeId);
 

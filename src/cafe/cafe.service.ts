@@ -42,11 +42,17 @@ class CafeService {
 
   static async getCafes(location: string): Promise<Cafe[]> {
     try {
-      const cafe = await Cafe.findAll({ where: { location: { [Op.substring]: location } }, order: ['employeeCount', 'DESC'] });
+      let cafes: Cafe[];
 
-      if (!cafe) throw new Error('Cafe not found');
+      if (location) {
+        cafes = await Cafe.findAll({ where: { location: { [Op.substring]: location } }, order: ['employeeCount', 'DESC'] });
+      } else {
+        cafes = await Cafe.findAll({ order: ['employeeCount', 'DESC'] });
+      }
 
-      return cafe;
+      if (!cafes) throw new Error('Cafe not found');
+
+      return cafes;
     } catch (error: any) {
       if (error.message) throw error;
 
