@@ -94,9 +94,9 @@ class EmployeeService {
 
       employess.sort((a, b) => {
         if (a.dataValues.workDayCount && b.dataValues.workDayCount) {
-          return a.dataValues.workDayCount - b.dataValues.workDayCount;
+          return b.dataValues.workDayCount - a.dataValues.workDayCount;
         }
-        return a.dataValues.startDate.getDate() - b.dataValues.startDate.getDate();
+        return b.dataValues.startDate.getDate() - a.dataValues.startDate.getDate();
       });
 
       return employess;

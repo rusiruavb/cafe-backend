@@ -45,7 +45,7 @@ class CafeService {
       let cafes: Cafe[];
 
       if (location) {
-        cafes = await Cafe.findAll({ where: { location: { [Op.substring]: location } }, order: ['employeeCount', 'DESC'] });
+        cafes = await Cafe.findAll({ where: { location: { [Op.substring]: location } }, order: [['employeeCount', 'DESC']] });
       } else {
         cafes = await Cafe.findAll({ order: [['employeeCount', 'DESC']] });
       }
