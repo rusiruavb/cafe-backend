@@ -32,6 +32,69 @@ class CafeController {
     }
   }
 
+  static async findCafes(req: Request, res: Response): Promise<Response> {
+    if (!req.query.location) {
+      return res.status(400).json({ message: 'Bad request' });
+    }
+
+    try {
+      const location = req.query.location as string;
+
+      const cafes = await CafeService.getCafes(location);
+
+      return res.status(200).json({ cafes });
+    } catch (error: any) {
+      return res.status(500).json({ message: error.message, reason: JSON.stringify(error) });
+    }
+  }
+
+  static async updateCafe(req: Request, res: Response): Promise<Response> {
+    if (!req.params.cafeId) {
+      return res.status(400).json({ message: 'Bad request' });
+    }
+
+    const {
+      name, description, location,
+    } = req.body;
+
+    if (!name && !description && !location) {
+      return res.status(400).json({ message: 'Bad request' });
+    }
+
+    try {
+      let file: any;
+      if (req.file) {
+        file = req.file;
+      }
+
+      const cafeId = parseInt(req.params.cafeId);
+
+      const cafeDto = new CafeDTO(name, description, file, location);
+
+      const cafe = await CafeService.updateCafe(cafeId, cafeDto);
+
+      return res.status(200).json({ cafe });
+    } catch (error: any) {
+      return res.status(500).json({ message: error.message, reason: JSON.stringify(error) });
+    }
+  }
+
+  static async removeCafe(req: Request, res: Response): Promise<Response> {
+    if (!req.params.cafeId) {
+      return res.status(400).json({ message: 'Bad request' });
+    }
+
+    try {
+      const cafeId = parseInt(req.params.cafeId);
+
+      const deletedData = await CafeService.removeCafe(cafeId);
+
+      return res.status(200).json({ deletedData });
+    } catch (error: any) {
+      return res.status(500).json({ message: error.message, reason: JSON.stringify(error) });
+    }
+  }
+
   static async getCafeLogo(req: Request, res: Response): Promise<Response> {
     if (!req.params.key) {
       return res.status(400).json({ message: 'Bad request' });

@@ -1,4 +1,5 @@
 import { ManagedUpload } from 'aws-sdk/clients/s3';
+import { Op } from 'sequelize';
 import sequelize from '../configs/database.config';
 import CafeDTO from './cafe.dto';
 import Cafe from './cafe.model';
@@ -36,6 +37,77 @@ class CafeService {
       if (error.message) throw error;
 
       throw new Error('Create cafe failed');
+    }
+  }
+
+  static async getCafes(location: string): Promise<Cafe[]> {
+    try {
+      const cafe = await Cafe.findAll({ where: { location: { [Op.substring]: location } }, order: ['employeeCount', 'DESC'] });
+
+      if (!cafe) throw new Error('Cafe not found');
+
+      return cafe;
+    } catch (error: any) {
+      if (error.message) throw error;
+
+      throw new Error('Get cafe failed');
+    }
+  }
+
+  static async updateCafe(cafeId: number, cafeDto: CafeDTO): Promise<CafeAttributes> {
+    const trns = await sequelize.transaction();
+
+    try {
+      let uploadData: ManagedUpload.SendData | null;
+
+      if (cafeDto.logo) {
+        uploadData = await upload(cafeDto.logo);
+      } else {
+        uploadData = null;
+      }
+
+      const cafeInput = {
+        name: cafeDto.name,
+        description: cafeDto.description,
+        logo: uploadData ? uploadData.Key : null,
+        location: cafeDto.location,
+      };
+
+      await Cafe.update(cafeInput, { where: { id: cafeId }, transaction: trns });
+
+      const updatedCafe = await Cafe.findOne({ where: { id: cafeId }, transaction: trns });
+
+      if (!updatedCafe) throw new Error('Updated cafe not found');
+
+      await trns.commit();
+
+      return updatedCafe.dataValues;
+    } catch (error: any) {
+      await trns.rollback();
+
+      if (error.message) throw error;
+
+      throw new Error('Update cafe failed');
+    }
+  }
+
+  static async removeCafe(cafeId: number): Promise<any> {
+    const trns = await sequelize.transaction();
+
+    try {
+      const cafe = await Cafe.findOne({ where: { id: cafeId }, transaction: trns });
+
+      if (!cafe) throw new Error('Cafe not found');
+
+      await Cafe.destroy({ where: { id: cafeId }, transaction: trns });
+
+      return { cafe: cafe.dataValues.name, status: 'deleted', dateTime: new Date() };
+    } catch (error: any) {
+      await trns.rollback();
+
+      if (error.message) throw error;
+
+      throw new Error('Remove cafe failed');
     }
   }
 

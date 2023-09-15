@@ -13,6 +13,8 @@ class Cafe extends Model<CafeAttributes, CafeModeAttributes> implements CafeAttr
 
   public location!: string;
 
+  public employeeCount!: number;
+
   public readonly createdAt?: Date | undefined;
 
   public readonly updatedAt?: Date | undefined;
@@ -37,6 +39,11 @@ Cafe.init({
   location: {
     type: DataTypes.STRING,
     allowNull: false,
+  },
+  employeeCount: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    defaultValue: 0,
   },
 }, {
   sequelize,

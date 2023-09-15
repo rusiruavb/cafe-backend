@@ -3,6 +3,7 @@ export interface CafeAttributes {
   name: string;
   logo: string | null;
   location: string;
+  employeeCount?: number;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date

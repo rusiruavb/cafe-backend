@@ -30,6 +30,8 @@ class EmployeeService {
 
       const employee = await Employee.create(employeeInput, { transaction: trns });
 
+      // TODO: update employee count in cafe
+
       await trns.commit();
 
       return employee;
