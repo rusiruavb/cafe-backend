@@ -12,7 +12,7 @@ class EmployeeController {
       firstName, lastName, email, phoneNumber, gender, startDate, cafeId,
     } = req.body;
 
-    if (!firstName && !lastName && !email && !phoneNumber && !gender && !startDate && !cafeId) {
+    if (!firstName || !lastName || !email || !phoneNumber || !gender || !startDate || !cafeId) {
       return res.status(400).json({ message: 'Bad request' });
     }
 
@@ -52,8 +52,10 @@ class EmployeeController {
       firstName, lastName, email, phoneNumber, gender, startDate, cafeId, empId,
     } = req.body;
 
-    if (!firstName && !lastName && !email && !phoneNumber
-      && !gender && !startDate && !cafeId && !empId) {
+    console.log(req.body);
+
+    if (!firstName || !lastName || !email || !phoneNumber
+      || !gender || !startDate || !cafeId || !empId) {
       return res.status(400).json({ message: 'Bad request' });
     }
 

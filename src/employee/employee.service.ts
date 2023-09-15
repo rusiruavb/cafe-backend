@@ -65,22 +65,29 @@ class EmployeeService {
 
       if (cafeName) {
         employess = await Employee.findAll({
+          attributes: ['id', 'empId', 'firstName', 'lastName', 'email', 'phoneNumber', 'gender', 'startDate', 'createdAt', 'updatedAt'],
           include: {
             model: Cafe,
-            as: 'cafe',
             where: { name: { [Op.substring]: cafeName } },
           },
         });
       } else {
-        employess = await Employee.findAll();
+        employess = await Employee.findAll({
+          attributes: ['id', 'empId', 'firstName', 'lastName', 'email', 'phoneNumber', 'gender', 'startDate', 'createdAt', 'updatedAt'],
+          include: {
+            model: Cafe,
+            attributes: ['id', 'name', 'logo', 'location', 'description'],
+          },
+        });
       }
 
-      if (!(employess.length > 0)) throw new Error('Employees not found');
+      if (!(employess.length > 0)) return [];
 
       const currentDate = new Date();
 
       employess.forEach((employee) => {
-        const timeDiff = Math.abs(employee.dataValues.startDate.getTime() - currentDate.getTime());
+        const timeDiff = Math.abs(new Date(employee.dataValues.startDate).getTime()
+        - currentDate.getTime());
         const count = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
         employee.dataValues.workDayCount = count;
       });
@@ -126,6 +133,8 @@ class EmployeeService {
 
       if (!updatedEmployee) throw new Error('Update employee not found');
 
+      await trns.commit();
+
       return updatedEmployee.dataValues;
     } catch (error: any) {
       await trns.rollback();
@@ -147,6 +156,8 @@ class EmployeeService {
       }
 
       await Employee.destroy({ where: { id: empId }, transaction: trns });
+
+      await trns.commit();
 
       return { cafe: existingEmployee.dataValues.id, status: 'deleted', dateTime: new Date() };
     } catch (error: any) {

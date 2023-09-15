@@ -47,7 +47,7 @@ class CafeService {
       if (location) {
         cafes = await Cafe.findAll({ where: { location: { [Op.substring]: location } }, order: ['employeeCount', 'DESC'] });
       } else {
-        cafes = await Cafe.findAll({ order: ['employeeCount', 'DESC'] });
+        cafes = await Cafe.findAll({ order: [['employeeCount', 'DESC']] });
       }
 
       if (!cafes) throw new Error('Cafe not found');
@@ -64,18 +64,27 @@ class CafeService {
     const trns = await sequelize.transaction();
 
     try {
-      let uploadData: ManagedUpload.SendData | null;
+      const cafe = await Cafe.findByPk(cafeId);
+
+      if (!cafe) {
+        throw new Error('Cafe not found');
+      }
+
+      let uploadData: ManagedUpload.SendData | string | null;
+      let logo: string | null;
 
       if (cafeDto.logo) {
         uploadData = await upload(cafeDto.logo);
+        logo = uploadData.Key;
       } else {
-        uploadData = null;
+        uploadData = cafe.dataValues.logo;
+        logo = uploadData;
       }
 
       const cafeInput = {
         name: cafeDto.name,
         description: cafeDto.description,
-        logo: uploadData ? uploadData.Key : null,
+        logo,
         location: cafeDto.location,
       };
 
@@ -106,6 +115,8 @@ class CafeService {
       if (!cafe) throw new Error('Cafe not found');
 
       await Cafe.destroy({ where: { id: cafeId }, transaction: trns });
+
+      await trns.commit();
 
       return { cafe: cafe.dataValues.name, status: 'deleted', dateTime: new Date() };
     } catch (error: any) {

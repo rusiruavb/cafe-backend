@@ -12,7 +12,7 @@ class CafeController {
       name, description, location,
     } = req.body;
 
-    if (!name && !description && !location) {
+    if (!name || !description || !location) {
       return res.status(400).json({ message: 'Bad request' });
     }
 
@@ -49,7 +49,7 @@ class CafeController {
       name, description, location, cafeId,
     } = req.body;
 
-    if (!name && !description && !location && !cafeId) {
+    if (!name || !description || !location || !cafeId) {
       return res.status(400).json({ message: 'Bad request' });
     }
 

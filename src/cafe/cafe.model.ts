@@ -13,6 +13,8 @@ class Cafe extends Model<CafeAttributes, CafeModeAttributes> implements CafeAttr
 
   public location!: string;
 
+  public description!: string;
+
   public employeeCount!: number;
 
   public readonly createdAt?: Date | undefined;
@@ -35,6 +37,10 @@ Cafe.init({
   logo: {
     type: DataTypes.STRING,
     allowNull: true,
+  },
+  description: {
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   location: {
     type: DataTypes.STRING,

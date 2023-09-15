@@ -22,7 +22,7 @@ class AppAPI {
 
     this.app.post('/employee', (req, res) => EmployeeController.createEmployee(req, res));
     this.app.put('/employee', (req, res) => EmployeeController.updateEmployee(req, res));
-    this.app.put('/employee', (req, res) => EmployeeController.removeEmployee(req, res));
+    this.app.delete('/employee', (req, res) => EmployeeController.removeEmployee(req, res));
     this.app.get('/employees', (req, res) => EmployeeController.findEmployees(req, res));
 
     return this.app;
