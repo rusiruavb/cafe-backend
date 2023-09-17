@@ -65,7 +65,7 @@ class EmployeeService {
 
       if (cafeName) {
         employess = await Employee.findAll({
-          attributes: ['id', 'empId', 'firstName', 'lastName', 'email', 'phoneNumber', 'gender', 'startDate', 'createdAt', 'updatedAt'],
+          attributes: ['id', 'empId', 'firstName', 'lastName', 'email', 'phoneNumber', 'gender', 'startDate', 'CafeId', 'createdAt', 'updatedAt'],
           include: {
             model: Cafe,
             where: { name: { [Op.substring]: cafeName } },
@@ -73,7 +73,7 @@ class EmployeeService {
         });
       } else {
         employess = await Employee.findAll({
-          attributes: ['id', 'empId', 'firstName', 'lastName', 'email', 'phoneNumber', 'gender', 'startDate', 'createdAt', 'updatedAt'],
+          attributes: ['id', 'empId', 'firstName', 'lastName', 'email', 'phoneNumber', 'gender', 'startDate', 'CafeId', 'createdAt', 'updatedAt'],
           include: {
             model: Cafe,
             attributes: ['id', 'name', 'logo', 'location', 'description'],
@@ -124,6 +124,7 @@ class EmployeeService {
         email: employeeDto.email,
         phoneNumber: employeeDto.phoneNumber,
         gender: employeeDto.gender,
+        startDate: employeeDto.startDate,
         CafeId: employeeDto.cafeId,
       };
 

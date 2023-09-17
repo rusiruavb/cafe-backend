@@ -41,7 +41,7 @@ class EmployeeController {
 
       const employess = await EmployeeService.findEmployees(cafe);
 
-      return res.status(200).json({ employess });
+      return res.status(200).json(employess);
     } catch (error: any) {
       return res.status(500).json({ message: error.message, reason: JSON.stringify(error) });
     }
@@ -51,8 +51,6 @@ class EmployeeController {
     const {
       firstName, lastName, email, phoneNumber, gender, startDate, cafeId, empId,
     } = req.body;
-
-    console.log(req.body);
 
     if (!firstName || !lastName || !email || !phoneNumber
       || !gender || !startDate || !cafeId || !empId) {
@@ -66,7 +64,7 @@ class EmployeeController {
         email,
         phoneNumber,
         gender,
-        new Date(startDate),
+        startDate,
         cafeId,
       );
 

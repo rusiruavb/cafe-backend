@@ -16,6 +16,7 @@
   "author": "Rusiru Bandara",
   "license": "ISC",
   "devDependencies": {
+    "@types/cors": "^2.8.14",
     "@types/express": "^4.17.1",
     "@types/multer": "^1.4.7",
     "@types/uuid": "^9.0.4",
@@ -29,6 +30,7 @@
   },
   "dependencies": {
     "aws-sdk": "^2.1457.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "eslint": "^8.49.0",
     "express": "^4.17.1",

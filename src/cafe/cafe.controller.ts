@@ -26,7 +26,7 @@ class CafeController {
 
       const cafe = await CafeService.createCafe(cafeDto);
 
-      return res.status(201).json({ cafe });
+      return res.status(201).json(cafe);
     } catch (error: any) {
       return res.status(500).json({ message: error.message, reason: JSON.stringify(error) });
     }
@@ -38,7 +38,7 @@ class CafeController {
 
       const cafes = await CafeService.getCafes(location);
 
-      return res.status(200).json({ cafes });
+      return res.status(200).json(cafes);
     } catch (error: any) {
       return res.status(500).json({ message: error.message, reason: JSON.stringify(error) });
     }
@@ -63,7 +63,7 @@ class CafeController {
 
       const cafe = await CafeService.updateCafe(parseInt(cafeId), cafeDto);
 
-      return res.status(200).json({ cafe });
+      return res.status(200).json(cafe);
     } catch (error: any) {
       return res.status(500).json({ message: error.message, reason: JSON.stringify(error) });
     }

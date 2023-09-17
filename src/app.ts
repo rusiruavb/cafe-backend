@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
+import cors from 'cors';
 import sequelize from './configs/database.config';
 import configs from './configs/global.config';
 import logger from './utils/logger.util';
@@ -15,6 +16,8 @@ const bootstrap = async () => {
   });
 
   app.use(express.json());
+
+  app.use(cors());
 
   app.listen(port, async () => {
     try {

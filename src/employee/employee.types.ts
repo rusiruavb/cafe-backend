@@ -8,6 +8,7 @@ export interface EmployeeAttributes {
   gender: any;
   startDate: Date;
   workDayCount?: number;
+  CafeId?: number;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date

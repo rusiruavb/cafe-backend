@@ -40,9 +40,9 @@ class CafeService {
     }
   }
 
-  static async getCafes(location: string): Promise<Cafe[]> {
+  static async getCafes(location: string): Promise<any[]> {
     try {
-      let cafes: Cafe[];
+      let cafes: any[];
 
       if (location) {
         cafes = await Cafe.findAll({ where: { location: { [Op.substring]: location } }, order: [['employeeCount', 'DESC']] });
